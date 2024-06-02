@@ -9,6 +9,55 @@
 #include <condition_variable>
 #include <functional>
 
+// Any类型
+class Any {
+public:
+
+	Any() = default;
+	~Any() = default;
+	Any(const Any&) = delete;
+	Any& operator=(const Any&) = delete;
+	Any(Any&&) = default;
+	Any& operator=(Any&&) = default;
+
+	// 接收任意类型的数据
+	template<typename T>
+	Any(T data): base_(std::make_unique<Derive<T>>(data)){
+
+	}
+
+	// 提取Any对象存储的data数据
+	template<typename T>
+	T case_() {
+		Derive<T>* pd = dynamic_cast<Derive<T>*>(base_.get());
+		if (pd == nullptr) {
+			throw "type is unmatch";
+		}
+		return pd->data_;
+	}
+private:
+	// 基类类型
+	class Base {
+	public:
+		virtual ~Base() = default;
+	};
+	
+	// 派生类类型
+	template<typename T>
+	class Derive : public Base {
+	public:
+		Derive(T data) :data_(data) {
+
+		};
+
+		T data_;
+	};
+
+private:
+	// 定义基类指针
+	std::unique_ptr<Base> base_;
+};
+
 // 任务抽象基类
 class Task {
 public:
@@ -55,7 +104,7 @@ public:
 	void setTaskQueueMaxThreshHold(int threshHold);
 
 	// 提交任务
-	void submitTask(std::shared_ptr<Task> sp);
+	Any submitTask(std::shared_ptr<Task> sp);
 
 	// 开启线程池
 	void start(int initThreadSize = 4);

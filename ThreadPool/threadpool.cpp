@@ -30,7 +30,7 @@ void ThreadPool::setTaskQueueMaxThreshHold(int threshHold) {
 }
 
 // 提交任务
-void ThreadPool::submitTask(std::shared_ptr<Task> sp) {
+Any ThreadPool::submitTask(std::shared_ptr<Task> sp) {
 	
 	// 获取锁
 	std::unique_lock<std::mutex> lock(this->taskQueueMtx_);

@@ -67,7 +67,7 @@ private:
 	void threadHandler();
 
 private:
-	std::vector<Thread*> threads_;		// 线程列表
+	std::vector<std::unique_ptr<Thread>> threads_;		// 线程列表
 	int initThreadSize_;				// 初始线程数量
 
 	std::queue<std::shared_ptr<Task>> taskQueue_;	// 任务队列
